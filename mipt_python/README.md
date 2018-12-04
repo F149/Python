@@ -1,2 +1,2 @@
-## Python by MPTI and MailGroup
+## Python by MIPT and MailGroup
 
