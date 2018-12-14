@@ -11,22 +11,19 @@ def create_sprite(img, sprite_size):
     return sprite
 
 
+class AbstractObject(ABC):
+
+    def __init__(self):
+        pass
+
+    def draw(self, display):
+        pass
+
 class Interactive(ABC):
 
     @abstractmethod
     def interact(self, engine, hero):
         pass
-
-
-class Ally(AbstractObject, Interactive):
-
-    def __init__(self, icon, action, position):
-        self.sprite = icon
-        self.action = action
-        self.position = position
-
-    def interact(self, engine, hero):
-        self.action(engine, hero)
 
 
 class Creature(AbstractObject):
@@ -40,6 +37,12 @@ class Creature(AbstractObject):
 
     def calc_max_HP(self):
         self.max_hp = 5 + self.stats["endurance"] * 2
+
+    @property
+    def get_damage(self):
+        x = self.stats['strength']*5 + self.stats['endurance']*2 + self.stats['intelligence']*3 + self.stats['luck']*4
+        y = self.stats['strength'] + self.stats['endurance'] + self.stats['intelligence'] + self.stats['luck']
+        return int(x/y)
 
 
 class Hero(Creature):
@@ -60,6 +63,46 @@ class Hero(Creature):
             self.calc_max_HP()
             self.hp = self.max_hp
 
+
+class Ally(AbstractObject, Interactive):
+
+    def __init__(self, icon, action, position):
+        self.sprite = icon
+        self.action = action
+        self.position = position
+
+    def interact(self, engine, hero):
+        self.action(engine, hero)
+
+
+class Enemy(Creature, Interactive):
+
+    def __init__(self, icon, stats, xp, position):
+        super().__init__(icon, stats, position)
+        self.xp = xp
+
+    def interact(self, engine, hero):
+        hero_damage = hero.get_damage
+        damage = self.get_damage
+        while True:
+            self.hp -= hero_damage
+            engine.notify("Hero's damage - " + str(hero_damage))
+            engine.notify("Enemy's HP - " + str(self.hp))
+            if self.hp <= 0:
+                engine.notify("Hero Killed Enemy")
+                hero.exp += self.xp
+                for it in hero.level_up():
+                    engine.notify(it)
+                return True
+            else:
+                engine.notify("Enemy's damage - " + str(damage))
+                hero.hp -= damage
+                if hero.hp <= 0:
+                    engine.notify("Hero is dead")
+                    engine.notify("game over")
+                    engine.game_process = False
+                    engine.game_over = True
+                    return False
 
 class Effect(Hero):
 
