@@ -1,0 +1,27 @@
+levels:
+  - !special_map
+    rat: 20
+    knight: 5
+    bless: 2
+    remove: 1
+    chest: 2
+    stairs: 1
+    heal: 3
+    dragon: 1
+    naga: 5
+  - !random_map {}
+  - !empty_map
+    stairs: 1
+  - !special_map
+    naga: 10
+    rat: 5
+    stairs: 1
+    bless: 3
+    remove: 1
+    heal: 2
+  - !special_map
+    dragon: 1
+    chest: 2
+    rat: 10
+    knight: 10
+    stairs: 1
